@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<title><%= title %> </title>
+		<meta name="generator" content="Bootply" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+		<link href="css/styles.css" rel="stylesheet">
+
+	</head>
+	<body>
+
+<div   style="min-height: 100vh;">
+
+   
+<header class="navbar navbar-bright navbar-fixed-top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav class="collapse navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+        <li>
+          <a href="#">Gyani Baba</a>
+        </li>
+       
+      </ul>
+     
+    </nav>
+  </div>
+</header>
+
+
+<div class="container">
+  <div class="chat-container">
+    <div id="chat-history"></div>
+    <div class="input-group mb-3 myfooter ">
+      <hr>
+      <!-- <input type="text" id="user-input" class="form-control" placeholder="Type your message here..."  style="width:80%; margin-left: 10px; margin-bottom: 5px;"> -->
+      <textarea  cols="30" rows="2" id="user-input" class="form-control"  style="width:80%; margin-left: 10px; margin-bottom: 5px;"></textarea>
+      <div class="input-group-append">
+        <button class="btn btn-primary" type="button" onclick="sendMessage()" style="margin-left: 2px;">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                                                                           
+<hr>
+
+</div>
+<footer>
+  
+</footer>
+
+
+
+<script>
+  function sendMessage() {
+    var userInput = document.getElementById("user-input").value;
+    if (userInput.trim() === "") return;
+    appendMessage('user', userInput);
+    getChatGPTResponse(userInput);
+    document.getElementById("user-input").value = "";
+  }
+
+  function getChatGPTResponse(userInput) {
+    // You would need to implement logic to send the user input to ChatGPT and receive a response
+    // For demonstration purposes, let's just simulate a response here
+
+    var response = "This is a simulated response from ChatGPT.";
+    const data = {
+            input:userInput
+          };
+
+          fetch('http://localhost:3001/chat-api/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data.response);
+            response=data.response;
+            appendMessage('chatgpt', response);
+          })
+          .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+          });
+
+    
+    // setTimeout(function () {
+    //  // appendMessage('chatgpt', response);
+    // }, 1000); // Simulate a delay for the response
+  }
+
+  function appendMessage1(sender, message) {
+    var chatHistory = document.getElementById("chat-history");
+    var messageDiv = document.createElement("pre");
+    messageDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
+    messageDiv.innerHTML = message;
+    chatHistory.appendChild(messageDiv);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+
+  function appendMessage2(sender, message) {
+  var chatHistory = document.getElementById("chat-history");
+  var messageDiv = document.createElement("pre");
+  messageDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
+  messageDiv.textContent = message; // Use textContent to set plain text
+  chatHistory.appendChild(messageDiv);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+
+function appendMessage(sender, message) {
+  var chatHistory = document.getElementById("chat-history");
+  var messageDiv = document.createElement("div");
+  messageDiv.className = "code-snippet";
+
+  var headerDiv = document.createElement("div");
+  headerDiv.className = "snippet-header";
+  headerDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
+  headerDiv.textContent = sender.toUpperCase(); // Display sender (e.g., HTML, CSS, JavaScript) in uppercase
+  messageDiv.appendChild(headerDiv);
+
+  var codeDiv = document.createElement("pre");
+  codeDiv.textContent = message.trim(); // Trim leading/trailing whitespace
+  messageDiv.appendChild(codeDiv);
+
+  chatHistory.appendChild(messageDiv);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+
+
+
+</script>
+
+
+
+	<!-- script references -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+	</body>
+</html>
