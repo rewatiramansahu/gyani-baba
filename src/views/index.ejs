@@ -84,7 +84,7 @@
             input:userInput
           };
 
-          fetch('https://gyani-baba.onrender.com/chat-api/', {
+          fetch('http://localhost:3001/chat-api/', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -106,26 +106,101 @@
             console.error('There was a problem with the fetch operation:', error);
           });
 
-    
-    // setTimeout(function () {
-    //  // appendMessage('chatgpt', response);
-    // }, 1000); // Simulate a delay for the response
   }
 
-  function appendMessage1(sender, message) {
-    var chatHistory = document.getElementById("chat-history");
-    var messageDiv = document.createElement("pre");
-    messageDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
-    messageDiv.innerHTML = message;
-    chatHistory.appendChild(messageDiv);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
-  }
 
-  function appendMessage2(sender, message) {
+
+function appendMessage1(sender, message) {
   var chatHistory = document.getElementById("chat-history");
-  var messageDiv = document.createElement("pre");
-  messageDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
-  messageDiv.textContent = message; // Use textContent to set plain text
+  var messageDiv = document.createElement("div");
+  messageDiv.className = "code-snippet";
+
+  var headerDiv = document.createElement("div");
+  headerDiv.className = "snippet-header";
+  headerDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
+  headerDiv.textContent = sender.toUpperCase(); // Display sender (e.g., HTML, CSS, JavaScript) in uppercase
+  messageDiv.appendChild(headerDiv);
+
+  if (sender === 'chatgpt') {
+    var codeDiv = document.createElement("pre");
+    codeDiv.textContent = message.trim(); // Trim leading/trailing whitespace
+    messageDiv.appendChild(codeDiv);
+
+    // Create a copy button only for ChatGPT responses
+    var copyButton = document.createElement("button");
+    copyButton.textContent = "Copy";
+    copyButton.className = "btn btn-secondary btn-sm";
+    copyButton.onclick = function() {
+      // Create a temporary textarea to hold the text
+      var tempTextArea = document.createElement("textarea");
+      tempTextArea.value = message.trim();
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempTextArea);
+    };
+    messageDiv.appendChild(copyButton);
+  } else {
+    // For user messages, just display the message without copy button
+    var userMessageDiv = document.createElement("div");
+    userMessageDiv.textContent = message.trim();
+    messageDiv.appendChild(userMessageDiv);
+  }
+
+  chatHistory.appendChild(messageDiv);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function appendMessage1(sender, message) {
+  var chatHistory = document.getElementById("chat-history");
+  var messageDiv = document.createElement("div");
+  messageDiv.className = "code-snippet";
+
+  var headerDiv = document.createElement("div");
+  headerDiv.className = "snippet-header";
+  headerDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
+  headerDiv.textContent = sender.toUpperCase(); // Display sender (e.g., HTML, CSS, JavaScript) in uppercase
+  messageDiv.appendChild(headerDiv);
+
+  if (sender === 'chatgpt') {
+    var codeBlocks = message.split("```"); // Split the message into parts delimited by ```
+    for (var i = 0; i < codeBlocks.length; i++) {
+      // If i is odd, it means this part is a code block
+      if (i % 2 === 1) {
+        var codeDiv = document.createElement("pre");
+        codeDiv.className = "code-block"; // Add a specific class for styling
+        codeDiv.textContent = codeBlocks[i].trim(); // Trim leading/trailing whitespace
+        messageDiv.appendChild(codeDiv);
+
+        // Create a copy button only for the first code block
+        if (i === 1) {
+          var copyButton = document.createElement("button");
+          copyButton.textContent = "Copy";
+          copyButton.className = "btn btn-secondary btn-sm";
+          copyButton.onclick = function() {
+            // Create a temporary textarea to hold the text
+            var tempTextArea = document.createElement("textarea");
+            tempTextArea.value = codeBlocks[1].trim();
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+          };
+          messageDiv.appendChild(copyButton);
+        }
+      } else {
+        var textDiv = document.createElement("div");
+        textDiv.textContent = codeBlocks[i].trim();
+        messageDiv.appendChild(textDiv);
+      }
+    }
+  } else {
+    // For user messages, just display the message without copy button
+    var userMessageDiv = document.createElement("div");
+    userMessageDiv.textContent = message.trim();
+    messageDiv.appendChild(userMessageDiv);
+  }
+
   chatHistory.appendChild(messageDiv);
   chatHistory.scrollTop = chatHistory.scrollHeight;
 }
@@ -142,13 +217,49 @@ function appendMessage(sender, message) {
   headerDiv.textContent = sender.toUpperCase(); // Display sender (e.g., HTML, CSS, JavaScript) in uppercase
   messageDiv.appendChild(headerDiv);
 
-  var codeDiv = document.createElement("pre");
-  codeDiv.textContent = message.trim(); // Trim leading/trailing whitespace
-  messageDiv.appendChild(codeDiv);
+  if (sender === 'chatgpt') {
+    var codeBlocks = message.split("```"); // Split the message into parts delimited by ```
+    for (var i = 0; i < codeBlocks.length; i++) {
+      // If i is odd, it means this part is a code block
+      if (i % 2 === 1) {
+        var codeDiv = document.createElement("pre");
+        codeDiv.className = "code-block"; // Add a specific class for styling
+        codeDiv.textContent = codeBlocks[i].trim(); // Trim leading/trailing whitespace
+        messageDiv.appendChild(codeDiv);
+
+        // Create a copy button for each code block
+        var copyButton = document.createElement("button");
+        copyButton.textContent = "Copy";
+        copyButton.className = "btn btn-secondary btn-sm mycopy";
+        copyButton.onclick = function() {
+          // Create a temporary textarea to hold the text
+          var tempTextArea = document.createElement("textarea");
+          tempTextArea.value = codeBlocks[i].trim();
+          document.body.appendChild(tempTextArea);
+          tempTextArea.select();
+          document.execCommand("copy");
+          document.body.removeChild(tempTextArea);
+        };
+        messageDiv.appendChild(copyButton);
+      } else {
+        var textDiv = document.createElement("div");
+        textDiv.textContent = codeBlocks[i].trim();
+        messageDiv.appendChild(textDiv);
+      }
+    }
+  } else {
+    // For user messages or other types of responses, just display the message without special formatting
+    var textDiv = document.createElement("div");
+    textDiv.textContent = message.trim();
+    messageDiv.appendChild(textDiv);
+  }
 
   chatHistory.appendChild(messageDiv);
   chatHistory.scrollTop = chatHistory.scrollHeight;
 }
+
+
+
 
 
 
