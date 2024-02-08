@@ -110,101 +110,6 @@
 
 
 
-function appendMessage1(sender, message) {
-  var chatHistory = document.getElementById("chat-history");
-  var messageDiv = document.createElement("div");
-  messageDiv.className = "code-snippet";
-
-  var headerDiv = document.createElement("div");
-  headerDiv.className = "snippet-header";
-  headerDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
-  headerDiv.textContent = sender.toUpperCase(); // Display sender (e.g., HTML, CSS, JavaScript) in uppercase
-  messageDiv.appendChild(headerDiv);
-
-  if (sender === 'chatgpt') {
-    var codeDiv = document.createElement("pre");
-    codeDiv.textContent = message.trim(); // Trim leading/trailing whitespace
-    messageDiv.appendChild(codeDiv);
-
-    // Create a copy button only for ChatGPT responses
-    var copyButton = document.createElement("button");
-    copyButton.textContent = "Copy";
-    copyButton.className = "btn btn-secondary btn-sm";
-    copyButton.onclick = function() {
-      // Create a temporary textarea to hold the text
-      var tempTextArea = document.createElement("textarea");
-      tempTextArea.value = message.trim();
-      document.body.appendChild(tempTextArea);
-      tempTextArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempTextArea);
-    };
-    messageDiv.appendChild(copyButton);
-  } else {
-    // For user messages, just display the message without copy button
-    var userMessageDiv = document.createElement("div");
-    userMessageDiv.textContent = message.trim();
-    messageDiv.appendChild(userMessageDiv);
-  }
-
-  chatHistory.appendChild(messageDiv);
-  chatHistory.scrollTop = chatHistory.scrollHeight;
-}
-
-function appendMessage1(sender, message) {
-  var chatHistory = document.getElementById("chat-history");
-  var messageDiv = document.createElement("div");
-  messageDiv.className = "code-snippet";
-
-  var headerDiv = document.createElement("div");
-  headerDiv.className = "snippet-header";
-  headerDiv.className = sender === 'user' ? 'user-message' : 'chat-box';
-  headerDiv.textContent = sender.toUpperCase(); // Display sender (e.g., HTML, CSS, JavaScript) in uppercase
-  messageDiv.appendChild(headerDiv);
-
-  if (sender === 'chatgpt') {
-    var codeBlocks = message.split("```"); // Split the message into parts delimited by ```
-    for (var i = 0; i < codeBlocks.length; i++) {
-      // If i is odd, it means this part is a code block
-      if (i % 2 === 1) {
-        var codeDiv = document.createElement("pre");
-        codeDiv.className = "code-block"; // Add a specific class for styling
-        codeDiv.textContent = codeBlocks[i].trim(); // Trim leading/trailing whitespace
-        messageDiv.appendChild(codeDiv);
-
-        // Create a copy button only for the first code block
-        if (i === 1) {
-          var copyButton = document.createElement("button");
-          copyButton.textContent = "Copy";
-          copyButton.className = "btn btn-secondary btn-sm";
-          copyButton.onclick = function() {
-            // Create a temporary textarea to hold the text
-            var tempTextArea = document.createElement("textarea");
-            tempTextArea.value = codeBlocks[1].trim();
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempTextArea);
-          };
-          messageDiv.appendChild(copyButton);
-        }
-      } else {
-        var textDiv = document.createElement("div");
-        textDiv.textContent = codeBlocks[i].trim();
-        messageDiv.appendChild(textDiv);
-      }
-    }
-  } else {
-    // For user messages, just display the message without copy button
-    var userMessageDiv = document.createElement("div");
-    userMessageDiv.textContent = message.trim();
-    messageDiv.appendChild(userMessageDiv);
-  }
-
-  chatHistory.appendChild(messageDiv);
-  chatHistory.scrollTop = chatHistory.scrollHeight;
-}
-
 
 function appendMessage(sender, message) {
   var chatHistory = document.getElementById("chat-history");
@@ -231,15 +136,17 @@ function appendMessage(sender, message) {
         var copyButton = document.createElement("button");
         copyButton.textContent = "Copy";
         copyButton.className = "btn btn-secondary btn-sm mycopy";
-        copyButton.onclick = function() {
-          // Create a temporary textarea to hold the text
-          var tempTextArea = document.createElement("textarea");
-          tempTextArea.value = codeBlocks[i].trim();
-          document.body.appendChild(tempTextArea);
-          tempTextArea.select();
-          document.execCommand("copy");
-          document.body.removeChild(tempTextArea);
-        };
+        (function(block) { // Creating a closure to capture the current value of `i`
+          copyButton.onclick = function() {
+            // Create a temporary textarea to hold the text
+            var tempTextArea = document.createElement("textarea");
+            tempTextArea.value = block.trim();
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+          };
+        })(codeBlocks[i]); // Passing the current code block to the closure
         messageDiv.appendChild(copyButton);
       } else {
         var textDiv = document.createElement("div");
