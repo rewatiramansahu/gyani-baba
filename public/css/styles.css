@@ -233,3 +233,26 @@ width: 100%;
 }
 
 
+
+ /* Custom CSS for positioning the icon inside the textarea */
+ .input-group1{
+  position: relative;
+  width: 80%;
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+
+
+.voice-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+
+.icon-size{
+  color: #337ab7;
+  font-size: x-large;
+}
