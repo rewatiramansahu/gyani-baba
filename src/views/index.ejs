@@ -48,8 +48,14 @@
                         <!-- You can replace this with your desired icon -->
                       
                     </span>
+                    <!-- Buttons for Play and Pause -->
+                  <button id="playButton">Play</button>
+                  <button id="pauseButton">Pause</button>
+                  <button id="resumeButton">Resume</button>
+
 
                     <i class="fa fa-microphone icon-size" onclick="startVoiceInput()" ></i>
+
 
                     <div class="input-group-append">
                       
@@ -107,6 +113,7 @@
     const data = {
             input:userInput
           };
+          //https://gyani-baba.onrender.com/chat-api/
 
           fetch('https://gyani-baba.onrender.com/chat-api/', {
             method: 'POST',
@@ -136,6 +143,7 @@
 
 
 function appendMessage(sender, message) {
+ 
   var chatHistory = document.getElementById("chat-history");
   var messageDiv = document.createElement("div");
   messageDiv.className = "code-snippet";
@@ -178,6 +186,9 @@ function appendMessage(sender, message) {
         messageDiv.appendChild(textDiv);
       }
     }
+
+    speakMessage(message); // Speak the message
+    
   } else {
     // For user messages or other types of responses, just display the message without special formatting
     var textDiv = document.createElement("div");
@@ -191,6 +202,50 @@ function appendMessage(sender, message) {
 
 
 
+
+var lastMessage="";
+var msg = new SpeechSynthesisUtterance();
+        var speaking = false;
+
+        // Function to speak a message
+        function speakMessage(message) {          
+          lastMessage = message;
+            msg.text = lastMessage;
+            window.speechSynthesis.speak(msg);
+            speaking = true;
+        }
+
+        // Function to pause speech synthesis
+        function pauseSpeech() {
+            window.speechSynthesis.pause();
+            speaking = false;
+        }
+
+        // Function to resume speech synthesis
+        function resumeSpeech() {
+            window.speechSynthesis.resume();
+            speaking = true;
+        }
+
+        // Event listener for the play button
+        document.getElementById("playButton").addEventListener("click", function() {
+            var userInput = document.getElementById("user-input").value;
+            speakMessage(userInput);
+        });
+
+        // Event listener for the pause button
+        document.getElementById("pauseButton").addEventListener("click", function() {
+            pauseSpeech();
+        });
+
+        // Event listener for the resume button
+        document.getElementById("resumeButton").addEventListener("click", function() {
+            if (!speaking) {
+                speakMessage(msg.text);
+            } else {
+                resumeSpeech();
+            }
+        });
 
 
 
